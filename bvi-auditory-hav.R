@@ -12,13 +12,18 @@ library(colleyRstats)
 colleyRstats::colleyRstats_setup()
 
 
-library(easystats)
+#library(easystats)
 library(ARTool)
 library(dplyr)
 library(tidyr)
 library(ggplot2)
 library(FSA)
 library(rstatix)
+library(report)
+library(see)
+library(afex)
+library(effectsize)
+library(emmeans)
 
 
 main_df <- readxl::read_xlsx(path = "bvi-auditory-hav.xlsx", sheet = "Results")
@@ -156,7 +161,13 @@ ggwithinstatsWithPriorNormalityCheck(data = main_df, x = "ConditionID", y = "SA"
 
 checkAssumptionsForAnova(data = main_df, y = "SA", factors = c("infoContent", "VIP"))
 
-anova_test(data = main_df, dv = SA, wid = UserID, within = c(infoContent), between = c(VIP))
+anova_SA <- anova_test(data = main_df, dv = SA, wid = UserID, within = c(infoContent), between = c(VIP)) 
+anova_SA
+
+
+m <- aov_ez("UserID", "SA", main_df, within = "infoContent", between = "VIP")
+eta_squared(m, partial = TRUE, ci = 0.95, alternative = "greater")  # confirms 0.12, exact CI
+contrast(emmeans(m, ~ infoContent), "poly")                          # linear + quadratic
 
 dunnTest(SA ~ infoContent, data = main_df, method = "holm")
 
