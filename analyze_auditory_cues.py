@@ -82,6 +82,10 @@ from typing import Optional
 
 import numpy as np
 
+# near the top, after the imports
+DEFAULT_INPUTS = [str(Path(__file__).resolve().parent / "sounds")]
+
+
 # ----------------------------------------------------------------------------
 # Fixed analysis parameters (declared explicitly for reproducibility, rather
 # than relying on library defaults that may change across versions).
@@ -464,7 +468,8 @@ def collect_files(inputs, recursive):
 def main(argv=None):
     ap = argparse.ArgumentParser(
         description="Reproducible acoustic characterisation of short auditory cues.")
-    ap.add_argument("inputs", nargs="+", help="audio files and/or directories")
+    ap.add_argument("inputs", nargs="*", default=DEFAULT_INPUTS,
+                help="audio files and/or directories (default: the bundled sounds/)")
     ap.add_argument("--outdir", default="cue_analysis_out", help="output directory")
     ap.add_argument("--recursive", action="store_true",
                     help="recurse into directories")
